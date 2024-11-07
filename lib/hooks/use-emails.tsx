@@ -1,14 +1,11 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Email } from "../emails.types";
 import emailHistory from "./email-history.json";
+import { useCopilotReadable } from "@copilotkit/react-core";
 
 type EmailsContextType = {
   emails: Email[];
-  sendEmail: ({
-    body
-  }: {
-    body: string;
-  }) => void;
+  sendEmail: ({ body }: { body: string }) => void;
 };
 
 const EmailsContext = createContext<EmailsContextType | undefined>(undefined);
@@ -16,11 +13,12 @@ const EmailsContext = createContext<EmailsContextType | undefined>(undefined);
 export const EmailsProvider = ({ children }: { children: ReactNode }) => {
   const [emails, setEmails] = useState<Email[]>(emailHistory);
 
-  const sendEmail = ({
-    body
-  }: {
-    body: string;
-  }) => {
+  useCopilotReadable({
+    description: "The full history of this email thread",
+    value: emails,
+  });
+
+  const sendEmail = ({ body }: { body: string }) => {
     const email = {
       from: "me",
       to: "John Doe <john@acme.com>",
@@ -31,9 +29,7 @@ export const EmailsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <EmailsContext.Provider
-      value={{ emails, sendEmail }}
-    >
+    <EmailsContext.Provider value={{ emails, sendEmail }}>
       {children}
     </EmailsContext.Provider>
   );
